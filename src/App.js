@@ -1,5 +1,5 @@
 import React, { Fragment, Component} from 'react';
-import { Card, Icon, Image, Input } from 'semantic-ui-react';
+import { Card, Icon, Image, Input, Button } from 'semantic-ui-react';
 import axios from 'axios';
 import './style.css';
 
@@ -18,10 +18,13 @@ class App extends Component {
     super(props);
       this.state = {
       characters: [],
-        term: ''
+        term: '',
+        currentPage: 1,
+        charactersPerPage: 10
     };
 
       this.searchHandler = this.searchHandler.bind(this);
+      this.handleClick = this.handleClick.bind(this);
     
   }
 
@@ -35,21 +38,47 @@ class App extends Component {
 
   }
 
+  handleClick(event){
+    this.setState({currentPage: Number(event.target.id)});
+  }
+
   searchHandler(event){
-    this.setState({term: event.target.value})
+    this.setState({
+      term: event.target.value,
+      currentPage: 1
+    })
   }
 
   render(){
-    const {term, characters} = this.state;
+    const {term, characters, currentPage, charactersPerPage} = this.state;
+    var result = characters.filter(searchingFor(this.state.term));
+    var indexOfLastCharacters = currentPage * charactersPerPage;
+    var indexOfFirstCharacters = indexOfLastCharacters - charactersPerPage;
+    var currentPageCharacters = result.slice(indexOfFirstCharacters, indexOfLastCharacters);
+
+    var pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(result.length / charactersPerPage); i++){
+      pageNumbers.push(i);
+    }
+
+    var renderPagerNumbers = pageNumbers.map(number => {
+      return(
+        <Button id={number} onClick={this.handleClick}>{number}</Button>
+      );
+
+    });
+    
+
     return(
       <div className="container">
         <form>
-          <input type="text" onChange={this.searchHandler} value={term}/>
+          <Input icon='search' placeholder="Pesquisar" type="text" onChange={this.searchHandler} value={term}/>
         </form>
-        {characters.filter(searchingFor(this.state.term)).map(characters => {
+        <div>{renderPagerNumbers}</div>
+        {currentPageCharacters.map(characters => {
           return(
-             <div class="ui card">
-               <Card>
+             //<div class="ui card">
+               <Card id="card">
                       <Image src={characters.img} wrapped ui={false} />
                       <Card.Content>
                         <Card.Header>{characters.name}</Card.Header>
@@ -61,11 +90,13 @@ class App extends Component {
                         </Card.Description>
                       </Card.Content>
                     </Card>
-              </div>
+              //</div>
           )
         }
         )}
-      </div>    )
+
+      </div>    
+      )
   }
   
 }
