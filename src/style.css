@@ -1,0 +1,9 @@
+.container{
+    box-sizing: border-box;
+    display: flexbox;
+}
+
+.container src{
+    width: 400px;
+    height: 100px;;
+}
