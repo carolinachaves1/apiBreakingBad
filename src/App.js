@@ -1,53 +1,72 @@
-import React from 'react';
-import { Card, Icon, Image } from 'semantic-ui-react';
+import React, { Fragment, Component} from 'react';
+import { Card, Icon, Image, Input } from 'semantic-ui-react';
 import axios from 'axios';
 import './style.css';
 
-export default class App extends React.Component{
+
+  function searchingFor(term){
+    return function(x){
+      return x.name.toLowerCase().includes(term.toLowerCase()) || !term;
+    }
+  }
+
+
+
+
+class App extends Component {
   constructor(props){
     super(props);
       this.state = {
       characters: [],
+        term: ''
     };
-  }
 
-    componentDidMount() {
-      axios.get(`https://breakingbadapi.com/api/characters`)
-        .then(res => {
-          const characters = res.data;
-          this.setState({ characters });
-        })
-    }
-
-    render(){
-      return(
-        <div className='container'>
-        {this.state.characters.map((characters) =>{
-          return(
-            <Card>
-              <Image src={characters.img} wrapped ui={false}/>
-            
-            <Card.Content>
-              <Card.Header>{characters.name}</Card.Header>
-              <Card.Meta>{characters.nickname}</Card.Meta>
-              <Card.Meta>{characters.birthday}</Card.Meta>
-              <Card.Description>{characters.occupation}</Card.Description>
-            </Card.Content>
-          </Card>
-  
-          );
-  
-        })}
-  
-        </div>
-  
-  
-  
-      );
-    }
-
+      this.searchHandler = this.searchHandler.bind(this);
     
+  }
 
+  componentDidMount() {
+    axios.get(`https://breakingbadapi.com/api/characters`)
+      .then(res => {
+        const characters = res.data;
+        this.setState({ characters });
+      })
 
 
   }
+
+  searchHandler(event){
+    this.setState({term: event.target.value})
+  }
+
+  render(){
+    const {term, characters} = this.state;
+    return(
+      <div className="container">
+        <form>
+          <input type="text" onChange={this.searchHandler} value={term}/>
+        </form>
+        {characters.filter(searchingFor(this.state.term)).map(characters => {
+          return(
+             <div class="ui card">
+               <Card>
+                      <Image src={characters.img} wrapped ui={false} />
+                      <Card.Content>
+                        <Card.Header>{characters.name}</Card.Header>
+                        <Card.Meta>
+                          <span><Icon name='birthday'/> {characters.birthday} | <Icon name="user"/>{characters.nickname}</span>
+                        </Card.Meta>
+                        <Card.Description>
+                          {characters.occupation}
+                        </Card.Description>
+                      </Card.Content>
+                    </Card>
+              </div>
+          )
+        }
+        )}
+      </div>    )
+  }
+  
+}
+  export default App;
