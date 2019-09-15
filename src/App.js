@@ -1,6 +1,7 @@
 import React, { Fragment, Component} from 'react';
-import { Card, Icon, Image, Input, Button } from 'semantic-ui-react';
+import { Card, Icon, Image, Input, Button, Header, Container, Segment} from 'semantic-ui-react';
 import axios from 'axios';
+import logo from './unnamed.jpg';
 import './style.css';
 
 
@@ -20,7 +21,7 @@ class App extends Component {
       characters: [],
         term: '',
         currentPage: 1,
-        charactersPerPage: 10
+        charactersPerPage: 6
     };
 
       this.searchHandler = this.searchHandler.bind(this);
@@ -70,16 +71,19 @@ class App extends Component {
     
 
     return(
+
       <div className="container">
-        <form>
+        
+        <Header className="header-top"><img src={logo} id="logo"/></Header>
+        <Container>
+          <form>
           <Input icon='search' placeholder="Pesquisar" type="text" onChange={this.searchHandler} value={term}/>
         </form>
-        <div>{renderPagerNumbers}</div>
         {currentPageCharacters.map(characters => {
           return(
              //<div class="ui card">
                <Card id="card">
-                      <Image src={characters.img} wrapped ui={false} />
+                      <Image id="img" src={characters.img} wrapped ui={false}/>
                       <Card.Content>
                         <Card.Header>{characters.name}</Card.Header>
                         <Card.Meta>
@@ -94,7 +98,10 @@ class App extends Component {
           )
         }
         )}
-
+</Container>
+<div className="pages">{renderPagerNumbers}</div>
+<div className="footer"><p>Desenvolvido por 
+	<a href="https://www.linkedin.com/in/carolinachaves1/"> Carolina Chaves </a></p></div>
       </div>    
       )
   }
